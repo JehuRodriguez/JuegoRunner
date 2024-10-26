@@ -24,7 +24,7 @@ public class BaseObstacle : MonoBehaviour
         }
     }
 
-    public void Collect()
+    public virtual  void Collect()
     {
         if (isCollectible)
         {
