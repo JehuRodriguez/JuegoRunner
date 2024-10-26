@@ -46,7 +46,7 @@ public class BaseCharacter : MonoBehaviour
         }
     }
 
-    void Update()
+    protected  virtual void Update()
     {
         Move();
     }
