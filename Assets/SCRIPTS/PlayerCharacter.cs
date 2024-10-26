@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class PlayerCharacter : BaseCharacter
 {
@@ -10,7 +11,10 @@ public class PlayerCharacter : BaseCharacter
     public int score = 0; 
     public Text scoreText;
 
-   protected override void Update()
+    public   new int life = 10;
+    public Text playerLifeText;
+
+    protected override void Update()
     {
         base.Update();
         if (Input.GetKeyDown(KeyCode.Space) && isGrounded)
@@ -51,6 +55,28 @@ public class PlayerCharacter : BaseCharacter
     private void UpdateScoreUI()
     {
         scoreText.text = "Puntuación: " + score; 
+    }
+
+    public void TakeDamage(int damage)
+    {
+        life -= damage; 
+        UpdateLifeUI(); 
+
+        if (life <= 0)
+        {
+            Die();
+        }
+    }
+    private void UpdateLifeUI()
+    {
+        playerLifeText.text = "Vida: " + life;
+    }
+
+    private void Die()
+    {  
+        Debug.Log("El jugador ha muerto.");
+        gameObject.SetActive(false);
+        SceneManager.LoadScene("GameOver");
     }
 }
 
