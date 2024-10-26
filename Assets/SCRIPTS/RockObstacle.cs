@@ -6,10 +6,6 @@ public class RockObstacle: BaseObstacle
 {
     public int damageAmount = 5;
 
-    public GameObject impactEffect; 
-    public AudioClip impactSound; 
-    
-
     public override void Interact()
     {
        
@@ -17,7 +13,7 @@ public class RockObstacle: BaseObstacle
 
         
         CauseDamage();
-        ShowImpactEffect();
+        
     }
 
     private void CauseDamage()
@@ -37,12 +33,5 @@ public class RockObstacle: BaseObstacle
         }
     }
 
-    private void ShowImpactEffect()
-    {
-        if (impactEffect != null)
-        {
-           
-            Instantiate(impactEffect, transform.position, Quaternion.identity);
-        }
-    }
+   
 }

@@ -55,5 +55,11 @@ public class EnemyCharacter: BaseCharacter
         base.OnCollisionEnter(collision);
         
     }
+
+    private void OnDrawGizmos()
+    {
+        Gizmos.color = Color.green;
+        Gizmos.DrawWireSphere(transform.position, detectionRange);
+    }
 }
 
