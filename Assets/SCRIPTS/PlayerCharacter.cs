@@ -12,7 +12,7 @@ public class PlayerCharacter : BaseCharacter
     public int score = 0; 
     public TextMeshProUGUI scoreText;
 
-    public   new int life = 10;
+    public   new int life = 100;
     public TextMeshProUGUI playerLifeText;
     public GameObject gameOverCanvas;
 
@@ -49,9 +49,12 @@ public class PlayerCharacter : BaseCharacter
 
     private void Jump()
     {
-        Debug.Log("JUGADOR ESTA SALTANDO");
-        rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
-        isGrounded = false; 
+        if (isGrounded)
+        {
+            Debug.Log("JUGADOR ESTA SALTANDO");
+            rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
+            isGrounded = false; 
+        }
     }
 
     protected override void OnCollisionEnter(Collision collision)
@@ -81,8 +84,9 @@ public class PlayerCharacter : BaseCharacter
         scoreText.text = "Puntuación: " + score; 
     }
 
-    public void TakeDamage(int damage)
+    public override void TakeDamage(int damage)
     {
+        base.TakeDamage(damage);
         life -= damage; 
         UpdateLifeUI(); 
 

@@ -6,9 +6,11 @@ using UnityEngine.UI;
 public class BaseCharacter : MonoBehaviour
 {
     public float speed = 5f;
-    public int life = 3;
-    public Text lifeText; 
-    public GameObject gameOverPanel; 
+    public int life = 10; 
+    public Text lifeText;
+    public GameObject gameOverPanel;
+
+
 
     protected virtual void Move()
     {
@@ -17,28 +19,29 @@ public class BaseCharacter : MonoBehaviour
 
     protected virtual void OnCollisionEnter(Collision collision)
     {
-        if (collision.gameObject.CompareTag("Obstacle"))
+        if (collision.gameObject.CompareTag("Obstacle") || collision.gameObject.CompareTag("Enemy"))
         {
-            life--;
-            UpdateLifeUI();
-            CheckGameOver();
-        }
-        else if (collision.gameObject.CompareTag("Enemy"))
-        {
-            life--;
-            UpdateLifeUI();
-            CheckGameOver();
+            TakeDamage(1); 
         }
     }
 
+    public virtual void TakeDamage(int damage)
+    {
+        life -= damage;
+        UpdateLifeUI();
+        CheckGameOver();
+    }
     private void UpdateLifeUI()
     {
-        lifeText.text = "Vida: " + life; 
+        if (lifeText != null)
+        {
+            lifeText.text = "Vida: " + life;
+        }
     }
 
     private void CheckGameOver()
     {
-        if (life <= 0)
+        if (life <= 0 && gameOverPanel != null)
         {
             
             gameOverPanel.SetActive(true);

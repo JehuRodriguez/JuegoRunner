@@ -6,11 +6,11 @@ public class EnemyCharacter: BaseCharacter
 {
     public float detectionRange = 10f; 
     public float attackRange = 2f; 
-    public float attackDamage = 1; 
+    public int attackDamage = 1;
 
+    public float chargeSpeed = 10f;
     private Transform player;
-    private float attackCooldown = 1f; 
-    private float lastAttackTime;
+    private bool isCharging = false;
 
     void Start()
     {
@@ -19,41 +19,54 @@ public class EnemyCharacter: BaseCharacter
 
     protected override void Update()
     {
-        base.Update();
         float distanceToPlayer = Vector3.Distance(transform.position, player.position);
-        if (distanceToPlayer < detectionRange)
-        {
-            MoveTowardsPlayer();
 
-            if (distanceToPlayer < attackRange && Time.time >= lastAttackTime + attackCooldown)
-            {
-                Attack();
-                lastAttackTime = Time.time; 
-            }
+        if (distanceToPlayer < detectionRange && !isCharging)
+        {
+            StartCoroutine(ChargeAtPlayer());
         }
     }
 
-    private void MoveTowardsPlayer()
+    private IEnumerator ChargeAtPlayer()
     {
-       
-        Vector3 direction = (player.position - transform.position).normalized;
-        transform.Translate(direction * speed * Time.deltaTime);
+        isCharging = true;
+        while (isCharging)
+        {
+            float distanceToPlayer = Vector3.Distance(transform.position, player.position);
+
+            if (distanceToPlayer < attackRange)
+            {
+                AttackPlayer();
+                isCharging = false; 
+            }
+            else
+            {
+                Vector3 direction = (player.position - transform.position).normalized;
+                transform.Translate(direction * chargeSpeed * Time.deltaTime);
+            }
+
+            yield return null; 
+        }
     }
 
-    private void Attack()
+    private void AttackPlayer()
     {
-        
         PlayerCharacter playerCharacter = player.GetComponent<PlayerCharacter>();
         if (playerCharacter != null)
         {
-            playerCharacter.TakeDamage((int)attackDamage); 
+            playerCharacter.TakeDamage(attackDamage);
+            Debug.Log($"El enemigo ha atacado al jugador y le ha hecho {attackDamage} de daño.");
         }
     }
 
     protected override void OnCollisionEnter(Collision collision)
     {
-        base.OnCollisionEnter(collision);
-        
+
+        if (collision.gameObject.CompareTag("Player"))
+        {
+            AttackPlayer();
+            isCharging = false;
+        }
     }
 
     private void OnDrawGizmos()
