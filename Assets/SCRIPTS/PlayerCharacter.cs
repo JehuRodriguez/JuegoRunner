@@ -23,6 +23,7 @@ public class PlayerCharacter : BaseCharacter
     private void Start()
     {
         rb = GetComponent<Rigidbody>();
+        life = 100;
         UpdateLifeUI();  
         UpdateScoreUI(); 
     }
@@ -57,6 +58,11 @@ public class PlayerCharacter : BaseCharacter
         }
     }
 
+    public bool IsGrounded()
+    {
+        return isGrounded;
+    }
+
     protected override void OnCollisionEnter(Collision collision)
     {
         base.OnCollisionEnter(collision);
@@ -88,7 +94,9 @@ public class PlayerCharacter : BaseCharacter
     {
         base.TakeDamage(damage);
         life -= damage; 
-        UpdateLifeUI(); 
+        UpdateLifeUI();
+
+        Debug.Log("Se bajó vida a " + life);
 
         if (life <= 0)
         {

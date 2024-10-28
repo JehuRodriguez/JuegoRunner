@@ -6,7 +6,7 @@ using UnityEngine.UI;
 public class BaseCharacter : MonoBehaviour
 {
     public float speed = 5f;
-    public int life = 10; 
+    public int life = 100; 
     public Text lifeText;
     public GameObject gameOverPanel;
 

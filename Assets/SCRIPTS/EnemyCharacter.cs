@@ -2,19 +2,24 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class EnemyCharacter: BaseCharacter
+public class EnemyCharacter : BaseCharacter
 {
-    public float detectionRange = 10f; 
-    public float attackRange = 2f; 
+    public float detectionRange = 10f;
+    public float attackRange = 2f;
     public int attackDamage = 1;
 
     public float chargeSpeed = 10f;
     private Transform player;
     private bool isCharging = false;
+    private Vector3 initialPosition;
+
+    private PlayerCharacter playerCharacter;
 
     void Start()
     {
         player = GameObject.FindGameObjectWithTag("Player").transform;
+        playerCharacter = player.GetComponent<PlayerCharacter>();
+        initialPosition = transform.position;
     }
 
     protected override void Update()
@@ -25,54 +30,74 @@ public class EnemyCharacter: BaseCharacter
         {
             StartCoroutine(ChargeAtPlayer());
         }
+       
     }
 
     private IEnumerator ChargeAtPlayer()
     {
         isCharging = true;
+
         while (isCharging)
         {
-            float distanceToPlayer = Vector3.Distance(transform.position, player.position);
+            
+            float distanceToPlayer = Vector3.Distance(
+                new Vector3(transform.position.x, 0, transform.position.z),
+                new Vector3(player.position.x, 0, player.position.z)
+            );
 
-            if (distanceToPlayer < attackRange)
+           
+            float heightDifference = Mathf.Abs(player.position.y - transform.position.y);
+
+           
+            if (distanceToPlayer < attackRange && heightDifference < 1f && playerCharacter != null && playerCharacter.IsGrounded())
             {
                 AttackPlayer();
-                isCharging = false; 
+                isCharging = false;
             }
+           
+            else if (distanceToPlayer < detectionRange && heightDifference < 1f)
+            {
+                Vector3 direction = (new Vector3(player.position.x, transform.position.y, player.position.z) - transform.position).normalized;
+                transform.Translate(direction * chargeSpeed * Time.deltaTime, Space.World);
+            }
+        
             else
             {
-                Vector3 direction = (player.position - transform.position).normalized;
-                transform.Translate(direction * chargeSpeed * Time.deltaTime);
+                Vector3 directionToInitial = (initialPosition - transform.position).normalized;
+                transform.Translate(directionToInitial * chargeSpeed * Time.deltaTime, Space.World);
+
+                // Si el enemigo está cerca de su posición inicial, detiene la carga
+                if (Vector3.Distance(transform.position, initialPosition) < 0.1f)
+                {
+                    isCharging = false;
+                }
             }
 
-            yield return null; 
+
+            yield return null;
         }
+
+    
     }
+
 
     private void AttackPlayer()
     {
-        PlayerCharacter playerCharacter = player.GetComponent<PlayerCharacter>();
         if (playerCharacter != null)
         {
             playerCharacter.TakeDamage(attackDamage);
-            Debug.Log($"El enemigo ha atacado al jugador y le ha hecho {attackDamage} de daño.");
         }
     }
 
-    protected override void OnCollisionEnter(Collision collision)
-    {
-
-        if (collision.gameObject.CompareTag("Player"))
-        {
-            AttackPlayer();
-            isCharging = false;
-        }
-    }
+    
 
     private void OnDrawGizmos()
     {
         Gizmos.color = Color.green;
         Gizmos.DrawWireSphere(transform.position, detectionRange);
+
+        Gizmos.color = Color.red;
+        Gizmos.DrawWireSphere(transform.position, attackRange);
     }
 }
 
