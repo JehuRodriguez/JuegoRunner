@@ -9,9 +9,11 @@ public class EnemyCharacter : BaseCharacter
     public int attackDamage = 1;
 
     public float chargeSpeed = 10f;
+    public float damageCooldown = 1.0f;
     private Transform player;
     private bool isCharging = false;
     private Vector3 initialPosition;
+    private float lastAttackTime = 0f;
 
     private PlayerCharacter playerCharacter;
 
@@ -49,10 +51,10 @@ public class EnemyCharacter : BaseCharacter
             float heightDifference = Mathf.Abs(player.position.y - transform.position.y);
 
            
-            if (distanceToPlayer < attackRange && heightDifference < 1f && playerCharacter != null && playerCharacter.IsGrounded())
+            if (distanceToPlayer < attackRange && heightDifference < 1f && playerCharacter != null && playerCharacter.IsGrounded() && Time.time >= lastAttackTime + damageCooldown)
             {
                 AttackPlayer();
-                isCharging = false;
+                lastAttackTime = Time.time;
             }
            
             else if (distanceToPlayer < detectionRange && heightDifference < 1f)
@@ -66,7 +68,7 @@ public class EnemyCharacter : BaseCharacter
                 Vector3 directionToInitial = (initialPosition - transform.position).normalized;
                 transform.Translate(directionToInitial * chargeSpeed * Time.deltaTime, Space.World);
 
-                // Si el enemigo está cerca de su posición inicial, detiene la carga
+                
                 if (Vector3.Distance(transform.position, initialPosition) < 0.1f)
                 {
                     isCharging = false;
@@ -86,6 +88,7 @@ public class EnemyCharacter : BaseCharacter
         if (playerCharacter != null)
         {
             playerCharacter.TakeDamage(attackDamage);
+           
         }
     }
 
