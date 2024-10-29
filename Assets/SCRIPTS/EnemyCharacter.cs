@@ -57,13 +57,18 @@ public class EnemyCharacter : BaseCharacter
                 lastAttackTime = Time.time;
             }
            
-            else if (distanceToPlayer < detectionRange && heightDifference < 1f)
+            else if (distanceToPlayer > attackRange * 0.75f && distanceToPlayer < detectionRange && heightDifference < 1f)
             {
                 Vector3 direction = (new Vector3(player.position.x, transform.position.y, player.position.z) - transform.position).normalized;
                 transform.Translate(direction * chargeSpeed * Time.deltaTime, Space.World);
             }
-        
-            else
+
+            else if (distanceToPlayer <= attackRange * 0.75f)
+            {
+                isCharging = false;
+            }
+
+            else 
             {
                 Vector3 directionToInitial = (initialPosition - transform.position).normalized;
                 transform.Translate(directionToInitial * chargeSpeed * Time.deltaTime, Space.World);

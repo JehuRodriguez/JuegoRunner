@@ -15,8 +15,9 @@ public class PlayerCharacter : BaseCharacter
     public   new int life = 100;
     public TextMeshProUGUI playerLifeText;
     public GameObject gameOverCanvas;
+    public Button restartButton;
 
-    
+
     private Rigidbody rb;
     private bool canMove = true;
 
@@ -25,7 +26,12 @@ public class PlayerCharacter : BaseCharacter
         rb = GetComponent<Rigidbody>();
         life = 100;
         UpdateLifeUI();  
-        UpdateScoreUI(); 
+        UpdateScoreUI();
+
+        gameOverCanvas.SetActive(false);
+        restartButton.gameObject.SetActive(false);
+
+        restartButton.onClick.AddListener(RestartGame);
     }
 
     protected override void Update()
@@ -113,13 +119,13 @@ public class PlayerCharacter : BaseCharacter
         Debug.Log("El jugador ha muerto.");
         gameObject.SetActive(false);
         gameOverCanvas.SetActive(true);
-        SceneManager.LoadScene("GameOver");
-        gameOverCanvas.transform.Find("RestartButton").gameObject.SetActive(true);
+        restartButton.gameObject.SetActive(true);
+        Time.timeScale = 0;
     }
 
     public void RestartGame()
     {
-      
+        Time.timeScale = 1;
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 
