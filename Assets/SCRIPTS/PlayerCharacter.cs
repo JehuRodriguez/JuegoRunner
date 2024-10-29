@@ -15,6 +15,7 @@ public class PlayerCharacter : BaseCharacter
     public   new int life = 100;
     public TextMeshProUGUI playerLifeText;
     public GameObject gameOverCanvas;
+    public GameObject victoryCanvas;
     public Button restartButton;
 
 
@@ -29,6 +30,7 @@ public class PlayerCharacter : BaseCharacter
         UpdateScoreUI();
 
         gameOverCanvas.SetActive(false);
+        victoryCanvas.SetActive(false);
         restartButton.gameObject.SetActive(false);
 
         restartButton.onClick.AddListener(RestartGame);
@@ -134,17 +136,16 @@ public class PlayerCharacter : BaseCharacter
        
         if (other.CompareTag("Limit"))
         {
-            canMove = false; 
+            ShowVictoryScreen();
         }
     }
 
-    private void OnTriggerExit(Collider other)
+    private void ShowVictoryScreen()
     {
-        
-        if (other.CompareTag("Limit"))
-        {
-            canMove = true;
-        }
+        Debug.Log("¡Victoria alcanzada!");
+        canMove = false;
+        victoryCanvas.SetActive(true);
+        Time.timeScale = 0;
     }
 }
 
